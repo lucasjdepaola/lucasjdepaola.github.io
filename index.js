@@ -9,6 +9,7 @@ const output = gid("output");
 const cursor = gid("cursor");
 const prmpt = gcl(".prompt");
 const mainterminal = gid("mainterminal");
+const file = gid("file");
 const mobileInput = gid("mobileinput");
 let id = 0;
 let activeId = false;
@@ -40,7 +41,11 @@ function initFileSystem() {
     new File("test.txt", "txt", "hello world"),
     new File("script.js", "js", "console.log('hi')"),
     new Directory("home", [
-      new File("secret.txt", "txt", "my github password is lucas100!77"),
+      new File(
+        "secret.txt",
+        "txt",
+        "github password: lucas100!77`network password: shinyelement75`instagram password: lucas!!77lucas",
+      ),
     ], null),
   ];
   return rootDir;
@@ -116,6 +121,7 @@ function cd(dirName) {
     if (element instanceof Directory && element.name === dirName) {
       element.prev = currentDir;
       currentDir = element;
+      file.innerText += "/" + currentDir.name;
       return;
     }
   }
