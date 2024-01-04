@@ -9,6 +9,7 @@ const output = gid("output");
 const cursor = gid("cursor");
 const prmpt = gcl(".prompt");
 const mainterminal = gid("mainterminal");
+const mobileInput = gid("mobileinput");
 let id = 0;
 let activeId = false;
 
@@ -45,7 +46,7 @@ function initFileSystem() {
   return rootDir;
 }
 
-document.addEventListener("keydown", (key) => { // terminal listener
+const keyDownFunction = (key) => { // terminal listener
   updateCursor("input");
   input.textContent += key.key.length > 1 ? "" : key.key;
   updateCursor("input");
@@ -61,7 +62,15 @@ document.addEventListener("keydown", (key) => { // terminal listener
     input.textContent = input.textContent.slice(0, -1);
   }
   updateCursor("input");
+};
+
+document.addEventListener("keydown", keyDownFunction);
+
+document.addEventListener("touchstart", () => {
+  mobileInput.focus();
 });
+
+mobileInput.addEventListener("keydown", keyDownFunction);
 
 window.addEventListener("resize", () => {
   updateCursor(); // TODO: have the resize update work properly, event doesn't capture it
