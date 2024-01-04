@@ -39,6 +39,10 @@ body {
   z-index:5;
 }
 
+#prompt, #input {
+  white-space:pre;
+}
+
 @font-face {
   font-family:"nfm";
   src:url("./fonts/nfm.ttf");
