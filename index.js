@@ -75,7 +75,7 @@ document.addEventListener("touchstart", () => {
   mobileInput.focus();
 });
 
-mobileInput.addEventListener("keydown", keyDownFunction);
+// mobileInput.addEventListener("keydown", keyDownFunction);
 
 window.addEventListener("resize", () => {
   updateCursor(); // TODO: have the resize update work properly, event doesn't capture it
