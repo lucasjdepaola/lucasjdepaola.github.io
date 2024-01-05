@@ -6,6 +6,10 @@ const gcl = (string) => {
 };
 const input = gid("input");
 const output = gid("output");
+console.log = (str) => {
+  if (str === undefined) return;
+  output.innerText += str + "\n";
+};
 const cursor = gid("cursor");
 const prmpt = gcl(".prompt");
 const mainterminal = gid("mainterminal");
@@ -100,8 +104,26 @@ function interpretText(string) {
   else if (string.split(" ")[0] === "mkdir") mkdir(string.split(" ")[1]);
   else if (string.split(" ")[0] === "touch") touch(string.split(" ")[1]);
   else if (string.split(" ")[0] === "edit") edit(string.split(" ")[1]);
+  else if (string.split(" ")[0] === "node") node(string.split(" ")[1]);
   else slowText("unknown command");
   return "";
+}
+
+function node(fileName) {
+  let code = "";
+  for (const element of currentDir.contents) {
+    if (element.name === fileName) {
+      code += element.contents;
+    }
+  }
+  try {
+    const result = eval(code);
+    // slowText(result);
+    console.log(result);
+  } catch (error) {
+    console.log("error " + error.message);
+  }
+  if (code === "") slowText("could not find file");
 }
 
 function ls() {
@@ -166,6 +188,8 @@ function edit(fileName) {
   box.id = "edit";
   box.style.backgroundColor = "black";
   box.style.color = "white";
+  box.style.width = "500px";
+  box.style.height = "400px";
   output.appendChild(box);
   box.addEventListener("keydown", (key) => {
     if (key.ctrlKey && key.key === "s") {
@@ -214,6 +238,7 @@ const clear = () => {
 
 function slowText(text) {
   if (activeId) return;
+  if (text === undefined) return;
   activeId = true;
   let i = 0;
   id = setInterval(() => {
