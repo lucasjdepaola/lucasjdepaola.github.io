@@ -91,6 +91,8 @@ function interpretText(string) {
   else if (string === "commands") {
     let commands = "c: clear screen`ls: list contents of the current directory";
     commands += "`cd: change directory`cat: display contents of a file";
+    commands +=
+      "`mkdir: create a directory`touch: create a file`edit: edit a file";
     slowText(commands);
   } else if (string === "ls") ls();
   else if (string.split(" ")[0] === "cat") cat(string.split(" ")[1]);
