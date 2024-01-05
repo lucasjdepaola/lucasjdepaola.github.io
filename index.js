@@ -11,12 +11,13 @@ const prmpt = gcl(".prompt");
 const mainterminal = gid("mainterminal");
 const file = gid("file");
 const mobileInput = gid("mobileinput");
+let editBool = false;
 let id = 0;
 let activeId = false;
 
 const TEXTSPEED = 25;
 const introduction =
-  "Lucas DePaola 2024`The only reason you could be here is by googling my name, I won't judge.`Type 'commands' for all listed commands.";
+  "Lucas DePaola 2024`Type 'commands' for all listed commands.";
 slowText(introduction);
 
 class File {
@@ -53,6 +54,7 @@ function initFileSystem() {
 
 const keyDownFunction = (key) => { // terminal listener
   updateCursor("input");
+  if (editBool) return;
   input.textContent += key.key.length > 1 ? "" : key.key;
   updateCursor("input");
   if (key.key === "Enter") {
@@ -83,6 +85,7 @@ window.addEventListener("resize", () => {
 
 function interpretText(string) {
   string = string.trim();
+  string = string.toLowerCase();
   if (string === "test") slowText("this is a test");
   else if (string === "c" || string === "clear") clear();
   else if (string === "commands") {
@@ -92,11 +95,15 @@ function interpretText(string) {
   } else if (string === "ls") ls();
   else if (string.split(" ")[0] === "cat") cat(string.split(" ")[1]);
   else if (string.split(" ")[0] === "cd") cd(string.split(" ")[1]);
+  else if (string.split(" ")[0] === "mkdir") mkdir(string.split(" ")[1]);
+  else if (string.split(" ")[0] === "touch") touch(string.split(" ")[1]);
+  else if (string.split(" ")[0] === "edit") edit(string.split(" ")[1]);
   else slowText("unknown command");
   return "";
 }
 
 function ls() {
+  if (currentDir.contents === null) return;
   let string = "";
   for (element of currentDir.contents) {
     string += element.name + "`";
@@ -128,6 +135,63 @@ function cd(dirName) {
   slowText(
     "Directory not found, run 'ls' to find the current files/directories.",
   );
+}
+
+function mkdir(dirName) {
+  for (const element of currentDir.contents) {
+    if (dirName === element.name) {
+      slowText("Cannot create directory, name already exists.");
+      return;
+    }
+  }
+  currentDir.contents.push(new Directory(dirName, null, currentDir));
+}
+
+function edit(fileName) {
+  editBool = true;
+  let fileContents = "";
+  let f;
+  if (currentDir.contents !== null) {
+    for (const element of currentDir.contents) {
+      if (element.name === fileName) {
+        fileContents += element.contents;
+        f = element;
+      }
+    }
+  }
+  const box = document.createElement("textarea");
+  box.value = fileContents;
+  box.id = "edit";
+  box.style.backgroundColor = "black";
+  box.style.color = "white";
+  output.appendChild(box);
+  box.addEventListener("keydown", (key) => {
+    if (key.ctrlKey && key.key === "s") {
+      event.preventDefault();
+      if (f !== undefined) f.contents = box.value;
+      else {
+        const fn = fileName === undefined ? "untitled.txt" : fileName;
+        currentDir.contents.push(
+          new File(fn, fn.split(".")[1], box.value),
+        );
+      }
+      output.removeChild(box);
+      editBool = false;
+    }
+  });
+}
+
+function touch(fileName) {
+  if (currentDir.contents === null) {
+    currentDir.contents = [new File(fileName, fileName.split(".")[1], "")];
+    return;
+  }
+  for (const element of currentDir.contents) {
+    if (element.name === fileName) {
+      slowText("Cannot create file, name already exists.");
+    }
+  }
+  currentDir.contents.push(new File(fileName, fileName.split(".")[1], ""));
 }
 
 function updateCursor(boundelement) {
