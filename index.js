@@ -13,11 +13,14 @@ console.log = (str) => {
 const cursor = gid("cursor");
 const prmpt = gcl(".prompt");
 const mainterminal = gid("mainterminal");
+const throwaway = gid("throwaway");
 const file = gid("file");
 const mobileInput = gid("mobileinput");
 let editBool = false;
 let id = 0;
 let activeId = false;
+const commandBuffer = [];
+let bufferIndex = 0;
 
 const TEXTSPEED = 25;
 const introduction =
@@ -44,7 +47,7 @@ function initFileSystem() {
   const rootDir = new Directory("root", null, null);
   rootDir.contents = [
     new File("test.txt", "txt", "hello world"),
-    new File("script.js", "js", "console.log('hi')"),
+    // new File("script.js", "js", "console.log('hi')"),
     new Directory("home", [
       new File(
         "secret.txt",
@@ -52,9 +55,23 @@ function initFileSystem() {
         "github password: lucas100!77`network password: shinyelement75`instagram password: lucas!!77lucas",
       ),
     ], null),
+    new Directory("scripts", [
+      new File(
+        "ip.js",
+        "js",
+        ip,
+      ),
+      new File(
+        "node.js",
+        "js",
+        node,
+      ),
+    ], null),
   ];
   return rootDir;
 }
+const root = initFileSystem();
+let currentDir = root;
 
 const keyDownFunction = (key) => { // terminal listener
   updateCursor("input");
@@ -68,9 +85,23 @@ const keyDownFunction = (key) => { // terminal listener
   else if (key.ctrlKey && key.key === "l") {
     event.preventDefault();
     input.textContent = "";
+    output.textContent = "";
   } else if (key.ctrlKey && key.key === "Backspace") ctrlBack();
   else if (key.key === "Backspace") {
     input.textContent = input.textContent.slice(0, -1);
+  } else if (key.key === "ArrowUp") {
+    if (bufferIndex > commandBuffer.length) bufferIndex--;
+    const len = commandBuffer.length - 1 - bufferIndex;
+    input.textContent = commandBuffer[len];
+    bufferIndex++;
+  } else if (key.key === "ArrowDown") {
+    if (bufferIndex < 0) bufferIndex++;
+    const len = commandBuffer.length - 1 - bufferIndex;
+    input.textContent = commandBuffer[len];
+    bufferIndex--;
+  } else if (key.ctrlKey && key.key === "a") {
+    event.preventDefault();
+    input.innerText = "";
   }
   updateCursor("input");
 };
@@ -88,6 +119,7 @@ window.addEventListener("resize", () => {
 });
 
 function interpretText(string) {
+  commandBuffer.push(string);
   string = string.trim();
   string = string.toLowerCase();
   if (string === "test") slowText("this is a test");
@@ -105,6 +137,9 @@ function interpretText(string) {
   else if (string.split(" ")[0] === "touch") touch(string.split(" ")[1]);
   else if (string.split(" ")[0] === "edit") edit(string.split(" ")[1]);
   else if (string.split(" ")[0] === "node") node(string.split(" ")[1]);
+  else if (string.split(" ")[0] === "exec") exec(string.split(" ")[1]);
+  else if (string.split(" ")[0] === "echo") echo(string.split(" ")[1]);
+  else if (string === "ip") ip();
   else slowText("unknown command");
   return "";
 }
@@ -126,13 +161,37 @@ function node(fileName) {
   if (code === "") slowText("could not find file");
 }
 
+function echo(somestr) {
+  slowText(somestr.replaceAll('"', ""));
+}
+
 function ls() {
   if (currentDir.contents === null) return;
   let string = "";
   for (element of currentDir.contents) {
-    string += element.name + "`";
+    string += element.name;
+    string += element instanceof Directory ? " (Directory)`" : "`";
   }
   slowText(string);
+}
+
+function ip() {
+  fetch("https://httpbin.org/ip").then((response) => response.json()).then((
+    data,
+  ) => slowText(data.origin));
+}
+
+function exec(scriptName) {
+  if (currentDir.contents === null) return;
+  for (element of currentDir.contents) {
+    if (element.name === scriptName) {
+      const contentArr = element.contents.split(/\r?\n/);
+      for (const ct of contentArr) {
+        interpretText(ct);
+      }
+    }
+  }
+  slowText("Could not find file.");
 }
 
 function cat(fileName) {
@@ -146,6 +205,8 @@ function cat(fileName) {
 function cd(dirName) {
   if (dirName === "..") {
     currentDir = currentDir.prev;
+    file.innerText = "~" +
+      (currentDir.name === "root" ? "" : "/" + currentDir.name);
     return;
   }
   for (const element of currentDir.contents) {
@@ -169,9 +230,12 @@ function mkdir(dirName) {
     }
   }
   currentDir.contents.push(new Directory(dirName, null, currentDir));
+  slowText("Directory: " + dirName + " created.");
 }
 
 function edit(fileName) {
+  const outputbuffer = output.innerHTML;
+  output.innerHTML = "";
   editBool = true;
   let fileContents = "";
   let f;
@@ -190,7 +254,9 @@ function edit(fileName) {
   box.style.color = "white";
   box.style.width = "500px";
   box.style.height = "400px";
-  output.appendChild(box);
+  box.style.backgroundColor = "rgb(1,1,1,0.2)";
+  throwaway.appendChild(box);
+  box.focus();
   box.addEventListener("keydown", (key) => {
     if (key.ctrlKey && key.key === "s") {
       event.preventDefault();
@@ -201,10 +267,18 @@ function edit(fileName) {
           new File(fn, fn.split(".")[1], box.value),
         );
       }
-      output.removeChild(box);
+      throwaway.removeChild(box);
       editBool = false;
-    }
+      output.innerHTML = outputbuffer;
+      updateCursor();
+    } else if (key.key === "Tab") event.preventDefault();
   });
+}
+
+function clone() {
+  const cl = mainterminal.cloneNode(true);
+  cl.style.marginLeft = "5px";
+  document.body.appendChild(cl);
 }
 
 function touch(fileName) {
@@ -218,6 +292,7 @@ function touch(fileName) {
     }
   }
   currentDir.contents.push(new File(fileName, fileName.split(".")[1], ""));
+  slowText("File: " + fileName + " created.");
 }
 
 function updateCursor(boundelement) {
@@ -239,21 +314,28 @@ const clear = () => {
 function slowText(text) {
   if (activeId) return;
   if (text === undefined) return;
-  activeId = true;
   let i = 0;
   id = setInterval(() => {
-    if (text[i] === "`") {
-      output.innerHTML += "<br>";
-      i++;
-    } else output.innerHTML += text[i++];
-    updateCursor("input");
-    if (i > text.length - 1) {
-      output.innerHTML += "<br><br>";
+    if (!activeId) {
+      if (text[i] === "`") {
+        output.innerHTML += "<br>";
+        i++;
+      } else output.innerHTML += text[i++];
       updateCursor("input");
-      clearInterval(id);
-      activeId = false;
+      scrollDown();
+      if (i > text.length - 1) {
+        output.innerHTML += "<br><br>";
+        updateCursor("input");
+        clearInterval(id);
+        activeId = false;
+        scrollDown();
+      }
     }
   }, TEXTSPEED);
+}
+
+function scrollDown() {
+  mainterminal.scrollTop = mainterminal.scrollHeight;
 }
 
 function ctrlBack() {
@@ -268,5 +350,28 @@ function ctrlBack() {
   }
   input.textContent = "";
 }
-const root = initFileSystem();
-let currentDir = root;
+
+function writeFunctions() {
+  for (const elemnt of currentDir.contents) {
+    if (elemnt.name === "scripts" && elemnt instanceof Directory) {
+      for (const f of functions) {
+        elemnt.contents.push(new File(f.name + ".js", "js", f));
+      }
+    }
+  }
+}
+
+function logFunctions() {
+  const functions = [];
+  for (const i in window) {
+    if (
+      (typeof window[i]).toString() == "function" &&
+      window[i].toString().indexOf("native") == -1
+    ) {
+      functions.push(window[i]);
+    }
+  }
+  return functions;
+}
+const functions = logFunctions();
+writeFunctions();

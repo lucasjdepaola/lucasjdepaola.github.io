@@ -22,6 +22,7 @@ body {
 
 #mainterminal {
   position:relative;
+  overflow:hidden;
   width:95%;
   height:95%;
   background-color:rgb(1,1,1,0.7);
@@ -42,6 +43,28 @@ body {
 
 #prompt, #input {
   white-space:pre;
+}
+
+#output {
+  text-overflow:ellipsis;
+}
+
+/* @keyframes scrollText { */
+/*   0% { */
+/*     transform: translateX(100%); */
+/*   } */
+/*   100% { */
+/*     transform: translateX(-100%); */
+/*   } */
+/* } */
+
+@keyframes scrollText {
+  0% {
+    transform: translateY(100%);
+  }
+  100% {
+    transform: translateY(-100%);
+  }
 }
 
 @font-face {
