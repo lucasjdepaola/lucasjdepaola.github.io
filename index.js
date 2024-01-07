@@ -19,7 +19,6 @@ const mobileInput = gid("mobileinput");
 let cmpstr = "";
 let editBool = false;
 let id = 0;
-let start = true;
 let activeId = false;
 const commandBuffer = [];
 let bufferIndex = 0;
@@ -115,6 +114,7 @@ window.addEventListener("resize", () => {
 
 function interpretText(string) {
   if (string === "") return;
+  clonePrompt();
   commandBuffer.push(string);
   string = string.trim();
   string = string.toLowerCase();
@@ -344,17 +344,6 @@ const clear = () => {
 
 function slowText(text) {
   if (activeId) return;
-  if (!start) {
-    const p = prmpt.cloneNode(true);
-    // const foo = document.getElementById("test");
-    // foo.querySelector;
-    const nput = p.querySelector("#input");
-    const cr = p.querySelector("#cursor");
-    cr.style.display = "none";
-    nput.id = "foo";
-    output.appendChild(p);
-  }
-  start = false;
   activeId = true;
   if (text === undefined) return;
   let i = 0;
@@ -373,6 +362,17 @@ function slowText(text) {
       scrollDown();
     }
   }, TEXTSPEED);
+}
+
+function clonePrompt() {
+  const p = prmpt.cloneNode(true);
+  // const foo = document.getElementById("test");
+  // foo.querySelector;
+  const nput = p.querySelector("#input");
+  const cr = p.querySelector("#cursor");
+  cr.style.display = "none";
+  nput.id = "foo";
+  output.appendChild(p);
 }
 
 function scrollDown() {
