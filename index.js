@@ -16,6 +16,7 @@ const mainterminal = gid("mainterminal");
 const throwaway = gid("throwaway");
 const file = gid("file");
 const mobileInput = gid("mobileinput");
+let cmpstr = "";
 let editBool = false;
 let id = 0;
 let activeId = false;
@@ -55,18 +56,7 @@ function initFileSystem() {
         "github password: lucas100!77`network password: shinyelement75`instagram password: lucas!!77lucas",
       ),
     ], null),
-    new Directory("scripts", [
-      new File(
-        "ip.js",
-        "js",
-        ip,
-      ),
-      new File(
-        "node.js",
-        "js",
-        node,
-      ),
-    ], null),
+    new Directory("scripts", [], null),
   ];
   return rootDir;
 }
@@ -102,6 +92,9 @@ const keyDownFunction = (key) => { // terminal listener
   } else if (key.ctrlKey && key.key === "a") {
     event.preventDefault();
     input.innerText = "";
+  } else if (key.key === "Tab") {
+    event.preventDefault();
+    autoCompleteCommand();
   }
   updateCursor("input");
 };
@@ -140,6 +133,7 @@ function interpretText(string) {
   else if (string.split(" ")[0] === "exec") exec(string.split(" ")[1]);
   else if (string.split(" ")[0] === "echo") echo(string.split(" ")[1]);
   else if (string === "ip") ip();
+  else if (string === "b") cd("..");
   else slowText("unknown command");
   return "";
 }
@@ -159,6 +153,25 @@ function node(fileName) {
     console.log("error " + error.message);
   }
   if (code === "") slowText("could not find file");
+}
+
+function autoCompleteCommand() {
+  const outputArr = input.innerHTML.split(" ");
+  if (outputArr.length <= 1) {
+    for (e of functions) {
+      if (new RegExp(e.name).test(outputArr[0])) {
+        input.innerHTML = e.name;
+        cmpstr = e.name;
+      }
+    }
+  } else {
+    for (e of currentDir.contents) {
+      if (new RegExp(e.name).test(outputArr[1])) {
+        input.innerHTML = outputArr[0] + " " + e.name;
+        cmpstr = e.name;
+      }
+    }
+  }
 }
 
 function echo(somestr) {
@@ -313,23 +326,22 @@ const clear = () => {
 
 function slowText(text) {
   if (activeId) return;
+  activeId = true;
   if (text === undefined) return;
   let i = 0;
   id = setInterval(() => {
-    if (!activeId) {
-      if (text[i] === "`") {
-        output.innerHTML += "<br>";
-        i++;
-      } else output.innerHTML += text[i++];
+    if (text[i] === "`") {
+      output.innerHTML += "<br>";
+      i++;
+    } else output.innerHTML += text[i++];
+    updateCursor("input");
+    scrollDown();
+    if (i > text.length - 1) {
+      output.innerHTML += "<br><br>";
       updateCursor("input");
+      clearInterval(id);
+      activeId = false;
       scrollDown();
-      if (i > text.length - 1) {
-        output.innerHTML += "<br><br>";
-        updateCursor("input");
-        clearInterval(id);
-        activeId = false;
-        scrollDown();
-      }
     }
   }, TEXTSPEED);
 }
