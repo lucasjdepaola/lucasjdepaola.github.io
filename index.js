@@ -47,8 +47,10 @@ class Directory {
 
 function initFileSystem() {
   const rootDir = new Directory("root", null, null);
+  const test =
+    "You seem to have figured your way around this website, can your terminal skills find more within?";
   rootDir.contents = [
-    new File("test.txt", "txt", "hello world"),
+    new File("null.txt", "txt", test),
     // new File("script.js", "js", "console.log('hi')"),
     new Directory("home", [
       new File(
@@ -66,6 +68,7 @@ let currentDir = root;
 
 const keyDownFunction = (key) => { // terminal listener
   updateCursor("input");
+  scrollDown();
   if (editBool) return;
   input.textContent += key.key.length > 1 ? "" : key.key;
   updateCursor("input");
@@ -127,6 +130,7 @@ function interpretText(string) {
       "`mkdir: create a directory`touch: create a file`edit: edit a file";
     commands +=
       "`whoami: display user (change via cmd 'script whoami=\"USER\"')";
+    commands += "`weather: display local weather information.";
     slowText(commands);
   } else if (string === "ls") ls();
   else if (string.split(" ")[0] === "cat") cat(string.split(" ")[1]);
@@ -142,7 +146,8 @@ function interpretText(string) {
   else if (string === "whoami") slowText(whoami);
   else if (string.split(" ")[0] === "script") {
     interpretScript(string.slice(6, string.length));
-  } else slowText("unknown command");
+  } else if (string === "weather") weather();
+  else slowText("unknown command");
   return "";
 }
 
@@ -210,6 +215,18 @@ function ip() {
   fetch("https://httpbin.org/ip").then((response) => response.json()).then((
     data,
   ) => slowText(data.origin));
+}
+
+async function weather() {
+  try {
+    const response = await fetch("https://wttr.in");
+    const text = await response.text();
+    output.innerHTML += text;
+    updateCursor();
+    scrollDown();
+  } catch (error) {
+    console.log(error);
+  }
 }
 
 function exec(scriptName) {
@@ -286,6 +303,7 @@ function edit(fileName) {
   box.style.width = "500px";
   box.style.height = "400px";
   box.style.backgroundColor = "rgb(1,1,1,0.2)";
+  box.style.fontSize = "15px";
   throwaway.appendChild(box);
   box.focus();
   box.addEventListener("keydown", (key) => {
