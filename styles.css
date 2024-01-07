@@ -58,6 +58,30 @@ body {
 /*   } */
 /* } */
 
+#bl, #br {
+  color:#a42d1b;
+}
+
+#lt {
+  color:#11a1de;
+}
+
+#at {
+  color:#a5d941;
+}
+
+#lucas {
+  color:#f7dd12;
+}
+
+#money {
+  white-space:pre;
+}
+
+#file {
+  color:#eb6dcd;
+}
+
 @keyframes scrollText {
   0% {
     transform: translateY(100%);
@@ -74,3 +98,4 @@ body {
 
 @media (min-width: 768px) {
 }
+
