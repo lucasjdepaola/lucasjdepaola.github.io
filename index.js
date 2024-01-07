@@ -22,6 +22,7 @@ let id = 0;
 let activeId = false;
 const commandBuffer = [];
 let bufferIndex = 0;
+let whoami = "Guest";
 
 const TEXTSPEED = 25;
 const introduction =
@@ -122,6 +123,8 @@ function interpretText(string) {
     commands += "`cd: change directory`cat: display contents of a file";
     commands +=
       "`mkdir: create a directory`touch: create a file`edit: edit a file";
+    commands +=
+      "`whoami: display user (change via cmd 'script whoami=\"USER\"')";
     slowText(commands);
   } else if (string === "ls") ls();
   else if (string.split(" ")[0] === "cat") cat(string.split(" ")[1]);
@@ -134,7 +137,10 @@ function interpretText(string) {
   else if (string.split(" ")[0] === "echo") echo(string.split(" ")[1]);
   else if (string === "ip") ip();
   else if (string === "b") cd("..");
-  else slowText("unknown command");
+  else if (string === "whoami") slowText(whoami);
+  else if (string.split(" ")[0] === "script") {
+    interpretScript(string.slice(6, string.length));
+  } else slowText("unknown command");
   return "";
 }
 
@@ -146,13 +152,23 @@ function node(fileName) {
     }
   }
   try {
-    const result = eval(code);
+    // const result = eval(code);
     // slowText(result);
-    console.log(result);
+    // console.log(result);
   } catch (error) {
     console.log("error " + error.message);
   }
   if (code === "") slowText("could not find file");
+}
+
+function interpretScript(script) {
+  try {
+    // const result = eval(script);
+    // slowText(result);
+    // console.log(result);
+  } catch (error) {
+    console.log("error " + error.message);
+  }
 }
 
 function autoCompleteCommand() {
@@ -369,6 +385,9 @@ function writeFunctions() {
       for (const f of functions) {
         elemnt.contents.push(new File(f.name + ".js", "js", f));
       }
+      elemnt.contents.push(
+        new File("whoami.js", ".js", "//whoami = 'YOURUSERHERE';"),
+      );
     }
   }
 }
