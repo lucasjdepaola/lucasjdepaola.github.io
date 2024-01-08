@@ -60,6 +60,9 @@ function initFileSystem() {
       ),
     ], null),
     new Directory("scripts", [], null),
+    new Directory("aboutme", [
+      new File("information.txt", "txt", "some information about me."),
+    ], null),
   ];
   return rootDir;
 }
@@ -147,7 +150,9 @@ function interpretText(string) {
   else if (string.split(" ")[0] === "script") {
     interpretScript(string.slice(6, string.length));
   } else if (string === "weather") weather();
-  else slowText("unknown command");
+  else if (string.split(" ")[0] === "mv") {
+    mv(string.split(" ")[1], string.split(" ")[2]);
+  } else slowText("unknown command");
   return "";
 }
 
@@ -201,6 +206,16 @@ function echo(somestr) {
   slowText(somestr.replaceAll('"', ""));
 }
 
+function mv(str1, str2) {
+  for (e of currentDir.contents) {
+    if (e.name === str1) {
+      e.name = str2;
+      return;
+    }
+  }
+  slowText("File not found.");
+}
+
 function ls() {
   if (currentDir.contents === null) return;
   let string = "";
@@ -251,6 +266,7 @@ function cat(fileName) {
 }
 
 function cd(dirName) {
+  dirName = dirName.replaceAll("./", "");
   if (dirName === "..") {
     currentDir = currentDir.prev;
     file.innerText = "~" +
@@ -268,6 +284,10 @@ function cd(dirName) {
   slowText(
     "Directory not found, run 'ls' to find the current files/directories.",
   );
+}
+
+function fzf(string, arr) {
+  //coming soon.
 }
 
 function mkdir(dirName) {
