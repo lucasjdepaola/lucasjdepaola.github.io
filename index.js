@@ -124,6 +124,10 @@ window.addEventListener("resize", () => {
 
 function interpretText(string) {
   if (string === "") return;
+  if (string.includes(";")) {
+    const splt = string.split(";");
+    for (s of splt) interpretText(s);
+  }
   clonePrompt();
   commandBuffer.push(string);
   string = string.trim();
@@ -329,11 +333,12 @@ function edit(fileName) {
   }
   const box = document.createElement("textarea");
   box.value = fileContents;
+  const c = mainterminal.getBoundingClientRect();
   box.id = "edit";
   box.style.backgroundColor = "black";
   box.style.color = "white";
-  box.style.width = "500px";
-  box.style.height = "400px";
+  box.style.width = (c.width - 40) + "px";
+  box.style.height = (c.height - 40) + "px";
   box.style.backgroundColor = "rgb(1,1,1,0.2)";
   box.style.fontSize = "15px";
   throwaway.appendChild(box);
