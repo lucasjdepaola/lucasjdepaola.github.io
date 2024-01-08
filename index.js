@@ -19,6 +19,8 @@ const mobileInput = gid("mobileinput");
 let cmpstr = "";
 let editBool = false;
 let id = 0;
+let sudo = false; // if you really want to change this manually, I'm not stopping you.
+const vvvvvvvvvvvv = "void";
 let activeId = false;
 const commandBuffer = [];
 let bufferIndex = 0;
@@ -52,11 +54,13 @@ function initFileSystem() {
   rootDir.contents = [
     new File("null.txt", "txt", test),
     // new File("script.js", "js", "console.log('hi')"),
-    new Directory("home", [
+    new Directory("private", [
       new File(
         "secret.txt",
         "txt",
-        "github password: lucas100!77`network password: shinyelement75`instagram password: lucas!!77lucas",
+        sudo
+          ? "github password: lucas100!77`network password: shinyelement75`instagram password: lucas!!77lucas"
+          : "You need sudo permission to access this files contents.",
       ),
     ], null),
     new Directory("scripts", [], null),
@@ -124,6 +128,7 @@ function interpretText(string) {
   commandBuffer.push(string);
   string = string.trim();
   string = string.toLowerCase();
+  string = string.replaceAll("./", "");
   if (string === "test") slowText("this is a test");
   else if (string === "c" || string === "clear") clear();
   else if (string === "commands") {
@@ -187,19 +192,26 @@ function autoCompleteCommand() {
   const outputArr = input.innerHTML.split(" ");
   if (outputArr.length <= 1) {
     for (e of functions) {
-      if (new RegExp(e.name).test(outputArr[0])) {
+      if (textaligns(e.name, outputArr[0])) {
         input.innerHTML = e.name;
         cmpstr = e.name;
       }
     }
   } else {
     for (e of currentDir.contents) {
-      if (new RegExp(e.name).test(outputArr[1])) {
-        input.innerHTML = outputArr[0] + " " + e.name;
+      if (textaligns(e.name, outputArr[1])) {
+        input.innerHTML = outputArr[0] + " ./" + e.name;
         cmpstr = e.name;
       }
     }
   }
+}
+
+function textaligns(elementName, input) {
+  for (let i = 0; i < input.length; i++) {
+    if (elementName[i] !== input[i]) return false;
+  }
+  return true;
 }
 
 function echo(somestr) {
@@ -442,6 +454,17 @@ function writeFunctions() {
     }
   }
 }
+
+function fnListener(fn, timeInSeconds) {
+  setInterval(fn, timeInSeconds * 1000);
+}
+
+function sudoListener() {
+  if (sudo) {
+    slowText("Administrative permissions granted."); // User has changed a boolean value, can now access the mainframe.
+  }
+}
+// fnListener(sudoListener, 1);
 
 function logFunctions() {
   const functions = [];
