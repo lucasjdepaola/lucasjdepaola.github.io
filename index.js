@@ -18,6 +18,7 @@ const file = gid("file");
 const mobileInput = gid("mobileinput");
 let cmpstr = "";
 let editBool = false;
+let fzfBool = false;
 let id = 0;
 let sudo = false; // if you really want to change this manually, I'm not stopping you.
 const vvvvvvvvvvvv = "void";
@@ -127,8 +128,13 @@ function interpretText(string) {
   if (string.includes(";")) {
     const splt = string.split(";");
     for (s of splt) interpretText(s);
+  } else if (string.includes("|")) {
+    const splt = string.split("|");
+    if (string.includes("fzf")) fzfBool = true;
+    const o = interpretText(splt[0]).split("`");
+    initfzf(o);
   }
-  clonePrompt();
+  if (!fzfBool) clonePrompt();
   commandBuffer.push(string);
   string = string.trim();
   string = string.toLowerCase();
@@ -144,8 +150,8 @@ function interpretText(string) {
       "`whoami: display user (change via cmd 'script whoami=\"USER\"')";
     commands += "`weather: display local weather information.";
     slowText(commands);
-  } else if (string === "ls") ls();
-  else if (string.split(" ")[0] === "cat") cat(string.split(" ")[1]);
+  } else if (string === "ls") return ls();
+  else if (string.split(" ")[0] === "cat") return cat(string.split(" ")[1]);
   else if (string.split(" ")[0] === "cd") cd(string.split(" ")[1]);
   else if (string.split(" ")[0] === "mkdir") mkdir(string.split(" ")[1]);
   else if (string.split(" ")[0] === "touch") touch(string.split(" ")[1]);
@@ -239,7 +245,7 @@ function ls() {
     string += element.name;
     string += element instanceof Directory ? " (Directory)`" : "`";
   }
-  slowText(string);
+  return slowText(string);
 }
 
 function ip() {
@@ -302,8 +308,52 @@ function cd(dirName) {
   );
 }
 
+function initfzf(arr) {
+  const el = document.createElement("span");
+  el.id = "fzf";
+  el.innerText = arr.join("\r");
+  throwaway.appendChild(el);
+
+  function keydownFzf(key) {
+    el.innerText = "";
+    if (key.key === "Enter") {
+      document.removeEventListener("keydown", keydownFzf);
+      throwaway.removeChild(el);
+      fzfBool = false;
+      return fzf(input.innerText, arr);
+    } else if (key.ctrlKey && key.key === "c") {
+      document.removeEventListener("keydown", keydownFzf);
+      throwaway.removeChild(el);
+      fzfBool = false;
+    } else {
+      // el.innerText = fzf(input.innerText, arr);
+      for (const z of fzf(input.innerText, arr)) el.innerText += z + "\r";
+    }
+    updateCursor();
+  }
+  document.addEventListener("keydown", keydownFzf);
+}
+
 function fzf(string, arr) {
-  //coming soon.
+  if (string === "") return arr;
+  const a = [];
+  let num = 0;
+  let cache = 0;
+  let flag = false;
+  for (const e of arr) {
+    let str = string;
+    for (s of string) {
+      num = e.indexOf(s);
+      if (num === -1 || num < cache) {
+        flag = true;
+      } else {
+        str = str.replace(s, "");
+      }
+    }
+    if (!flag) a.push(e);
+    flag = false;
+  }
+  return a;
 }
 
 function mkdir(dirName) {
@@ -399,6 +449,7 @@ const clear = () => {
 
 function slowText(text) {
   if (activeId) return;
+  if (fzfBool) return text;
   activeId = true;
   if (text === undefined) return;
   let i = 0;
