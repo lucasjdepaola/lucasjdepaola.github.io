@@ -55,6 +55,21 @@ function initFileSystem() {
   rootDir.contents = [
     new File("null.txt", "txt", test),
     // new File("script.js", "js", "console.log('hi')"),
+    new Directory("documentation", [
+      new File(
+        "doc1.doc",
+        "doc",
+        (() => {
+          let st =
+            "You can use this terminal to do almost anything a regular terminal would do.`";
+          st +=
+            "You can view all the functions of this program in the ../scripts directory.`";
+          st +=
+            "to run and execute scripts, use 'node' like you would a javascript runtime.";
+          return st;
+        })(),
+      ),
+    ], null),
     new Directory("private", [
       new File(
         "secret.txt",
@@ -139,6 +154,7 @@ function interpretText(string) {
   string = string.trim();
   string = string.toLowerCase();
   string = string.replaceAll("./", "");
+  const ss = string.split(" ");
   if (string === "test") slowText("this is a test");
   else if (string === "c" || string === "clear") clear();
   else if (string === "commands") {
@@ -151,22 +167,22 @@ function interpretText(string) {
     commands += "`weather: display local weather information.";
     slowText(commands);
   } else if (string === "ls") return ls();
-  else if (string.split(" ")[0] === "cat") return cat(string.split(" ")[1]);
-  else if (string.split(" ")[0] === "cd") cd(string.split(" ")[1]);
-  else if (string.split(" ")[0] === "mkdir") mkdir(string.split(" ")[1]);
-  else if (string.split(" ")[0] === "touch") touch(string.split(" ")[1]);
-  else if (string.split(" ")[0] === "edit") edit(string.split(" ")[1]);
-  else if (string.split(" ")[0] === "node") node(string.split(" ")[1]);
-  else if (string.split(" ")[0] === "exec") exec(string.split(" ")[1]);
-  else if (string.split(" ")[0] === "echo") echo(string.split(" ")[1]);
+  else if (ss[0] === "cat") return cat(ss[1]);
+  else if (ss[0] === "cd" || ss[0] === "d") cd(ss[1]);
+  else if (ss[0] === "mkdir") mkdir(ss[1]);
+  else if (ss[0] === "touch") touch(ss[1]);
+  else if (ss[0] === "edit" || ss[0] === "e") edit(ss[1]);
+  else if (ss[0] === "node") node(ss[1]);
+  else if (ss[0] === "exec") exec(ss[1]);
+  else if (ss[0] === "echo") echo(ss[1]);
   else if (string === "ip") ip();
   else if (string === "b") cd("..");
   else if (string === "whoami") slowText(whoami);
-  else if (string.split(" ")[0] === "script") {
+  else if (ss[0] === "script") {
     interpretScript(string.slice(6, string.length));
   } else if (string === "weather") weather();
-  else if (string.split(" ")[0] === "mv") {
-    mv(string.split(" ")[1], string.split(" ")[2]);
+  else if (ss[0] === "mv") {
+    mv(ss[1], ss[2]);
   } else slowText("unknown command");
   return "";
 }
@@ -354,6 +370,87 @@ function fzf(string, arr) {
     flag = false;
   }
   return a;
+}
+
+function vim() {
+  let state = "insert";
+  let vimRow = 0;
+  let vimColumn = 0;
+
+  function vimKeyDown(key) {
+    if (state === "insert") {
+      insertState(key);
+    } else if (state === "normal") {
+      normalState(key);
+    } else if (state === "command") {
+      commandState(key);
+    } else if (state === "visual") {
+      visualState(key);
+    }
+    renderVimCursor();
+  }
+  function insertState(key) {
+    if (key.key === "Escape") {
+      state = "normal";
+    } else if (key.key === "Enter") {
+      appendRow(vimRow);
+    } else if (key.key.length <= 1 && !key.ctrlKey) {
+      txt.innerText += key.key;
+    }
+  }
+  function normalState(key) {
+    if (key.key === "i" && !key.ctrlKey) {
+      state = "insert";
+    } else if (key.key === ";" || key.key === ":") {
+      state = "command";
+    } else if (key.key === "v") {
+      state = "visual";
+    } else if (key.key === "V") {
+      state = "visual";
+      //highlight total;
+    }
+  }
+  function commandState(key) {
+    if (key.key === "Enter") {
+      interpretVimCommand(cmd.innerText);
+    } else if (key.key.length <= 1) {
+      cmd.innerText += key.key;
+    }
+  }
+  function visualState(key) {
+    if (key.key === "Escape") {
+      state = "normal";
+    } else if (key.key === "v") {
+      state = "normal";
+    }
+  }
+  function renderVimCursor() {
+    if (state === "normal") {
+    } else if (state === "insert") {
+    }
+  }
+  function appendRow(number) {
+    return "";
+  }
+  const typeBox = document.createElement("div");
+  const txt = document.createElement("div");
+  const cmd = document.createElement("div");
+  const crsr = document.createElement("div");
+  typeBox.id = "vim";
+  throwaway.appendChild(typeBox);
+  typeBox.appendChild(text);
+  typeBox.appendChild(cmd);
+  typeBox.appendChild(crsr);
+  document.addEventListener("keydown", vimKeyDown);
+}
+
+function typeTest() {
+  function testKeyDown(key) {
+  }
+  const typeBox = document.createElement("div");
+  typeBox.id = "typetest";
+  throwaway.appendChild(typeBox);
+  document.addEventListener("keydown", testKeyDown);
 }
 
 function mkdir(dirName) {
