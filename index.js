@@ -28,8 +28,10 @@ let bufferIndex = 0;
 let whoami = "Guest";
 
 const TEXTSPEED = 25;
+lbl("Lucas DePaola 2024");
 const introduction =
-  "Lucas DePaola 2024`Type 'commands' for all listed commands.";
+  // "Lucas DePaola 2024`Type 'commands' for all listed commands.";
+  "Type 'commands' for all listed commands.";
 slowText(introduction);
 
 class File {
@@ -145,9 +147,14 @@ function interpretText(string) {
     for (s of splt) interpretText(s);
   } else if (string.includes("|")) {
     const splt = string.split("|");
-    if (string.includes("fzf")) fzfBool = true;
-    const o = interpretText(splt[0]).split("`");
-    initfzf(o);
+    if (string.includes("fzf")) {
+      fzfBool = true;
+      const o = interpretText(splt[0]).split("`");
+      initfzf(o);
+    } else if (string.includes("grep")) {
+      const o = interpretText(splt[0]).split("`");
+      grep(splt[1].split(" ")[2], o);
+    }
   }
   if (!fzfBool) clonePrompt();
   commandBuffer.push(string);
@@ -183,7 +190,8 @@ function interpretText(string) {
   } else if (string === "weather") weather();
   else if (ss[0] === "mv") {
     mv(ss[1], ss[2]);
-  } else slowText("unknown command");
+  } else if (ss[0] === "lbl") lbl(ss[1]);
+  else slowText("unknown command");
   return "";
 }
 
@@ -372,6 +380,24 @@ function fzf(string, arr) {
   return a;
 }
 
+function grep(string, arr) {
+  const a = [];
+  const reg = new RegExp(string);
+  for (e of arr) {
+    if (reg.test(e)) {
+      a.push(e);
+    }
+  }
+  return a;
+}
+
+function lbl(string) {
+  const d = document.createElement("div");
+  d.style.animation = "scrollText 5s linear infinite";
+  d.innerText = string;
+  output.appendChild(d);
+}
+
 function vim() {
   let state = "insert";
   let vimRow = 0;
@@ -393,11 +419,20 @@ function vim() {
     if (key.key === "Escape") {
       state = "normal";
     } else if (key.key === "Enter") {
-      appendRow(vimRow);
+      appendRow();
     } else if (key.key.length <= 1 && !key.ctrlKey) {
       txt.innerText += key.key;
+      insertText(key.key);
     }
   }
+  const insertText = (text) => {
+    const s = document.createElement("span");
+    s.innerText = text;
+    txt.children.item(vimRow).insertBefore(
+      text,
+      txt.children.item(vimRow).children.item(vimColumn),
+    );
+  };
   function normalState(key) {
     if (key.key === "i" && !key.ctrlKey) {
       state = "insert";
@@ -408,6 +443,14 @@ function vim() {
     } else if (key.key === "V") {
       state = "visual";
       //highlight total;
+    } else if (key.key === "j") {
+      vimRow--;
+    } else if (key.key === "k") {
+      vimRow++;
+    } else if (key.key === "h") {
+      vimColumn--;
+    } else if (key.key === "l") {
+      vimColumn++;
     }
   }
   function commandState(key) {
@@ -424,13 +467,29 @@ function vim() {
       state = "normal";
     }
   }
-  function renderVimCursor() {
+  function renderVimCursor(spanPos) {
+    const pos = spanPos.getBoundingClientRect();
     if (state === "normal") {
     } else if (state === "insert") {
     }
   }
-  function appendRow(number) {
-    return "";
+  function appendRow() {
+    const rowAppend = document.createElement("span");
+    txt.insertBefore(txt.children.item(vimRow++));
+  }
+  function initText(fileName) {
+    let f;
+    if (currentDir.contents !== null) {
+      for (const element of currentDir.contents) {
+        if (element.name === fileName) {
+          fileContents += element.contents;
+          f = element;
+        }
+      }
+    }
+    for (c of f.contents) {
+      txt.innerHTML += "<span>" + c + "</span>";
+    }
   }
   const typeBox = document.createElement("div");
   const txt = document.createElement("div");
@@ -438,7 +497,7 @@ function vim() {
   const crsr = document.createElement("div");
   typeBox.id = "vim";
   throwaway.appendChild(typeBox);
-  typeBox.appendChild(text);
+  typeBox.appendChild(txt);
   typeBox.appendChild(cmd);
   typeBox.appendChild(crsr);
   document.addEventListener("keydown", vimKeyDown);

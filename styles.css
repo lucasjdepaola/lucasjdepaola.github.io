@@ -49,16 +49,17 @@ body {
 
 #output {
   text-overflow:ellipsis;
+  /* animation:scrollText 5s linear infinite; */
 }
 
-/* @keyframes scrollText { */
-/*   0% { */
-/*     transform: translateX(100%); */
-/*   } */
-/*   100% { */
-/*     transform: translateX(-100%); */
-/*   } */
-/* } */
+@keyframes scrollText {
+  0% {
+    transform: translateX(-50%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
 
 #bl, #br {
   color:#a42d1b;
@@ -84,14 +85,6 @@ body {
   color:#eb6dcd;
 }
 
-@keyframes scrollText {
-  0% {
-    transform: translateY(100%);
-  }
-  100% {
-    transform: translateY(-100%);
-  }
-}
 
 @font-face {
   font-family:"nfm";
