@@ -83,8 +83,24 @@ function initFileSystem() {
     ], null),
     new Directory("scripts", [], null),
     new Directory("aboutme", [
-      new File("information.txt", "txt", "some information about me."),
+      new File(
+        "information.txt",
+        "txt",
+        "There isn't much that I can write about myself`If you're looking for what I've made project wise, it should be on my github.",
+      ),
     ], null),
+    new Directory("philosophy", [
+      new File(
+        "crow.txt",
+        "txt",
+        "tba",
+      ),
+      new File(
+        "liveby.txt",
+        "txt",
+        "tba",
+      ),
+    ]),
   ];
   return rootDir;
 }
@@ -147,13 +163,14 @@ function interpretText(string) {
     for (s of splt) interpretText(s);
   } else if (string.includes("|")) {
     const splt = string.split("|");
+    fzfBool = true;
     if (string.includes("fzf")) {
-      fzfBool = true;
       const o = interpretText(splt[0]).split("`");
       initfzf(o);
     } else if (string.includes("grep")) {
       const o = interpretText(splt[0]).split("`");
       grep(splt[1].split(" ")[2], o);
+      fzfBool = false;
     }
   }
   if (!fzfBool) clonePrompt();
@@ -191,6 +208,7 @@ function interpretText(string) {
   else if (ss[0] === "mv") {
     mv(ss[1], ss[2]);
   } else if (ss[0] === "lbl") lbl(ss[1]);
+  else if (ss[0] === "vim") vim(ss[1]);
   else slowText("unknown command");
   return "";
 }
@@ -381,6 +399,7 @@ function fzf(string, arr) {
 }
 
 function grep(string, arr) {
+  console.log(string);
   const a = [];
   const reg = new RegExp(string);
   for (e of arr) {
