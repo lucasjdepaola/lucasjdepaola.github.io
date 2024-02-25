@@ -1,2 +1,2 @@
-alias ls="echo 'I dont feel like listing the current directories.'"
+alias ls="echo 'Do not paste commands into the terminal. run:\nunalias ls\nto undo.'"
 # if you're reading this, good job.
