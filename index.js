@@ -189,6 +189,7 @@ function interpretText(string) {
     commands +=
       "`whoami: display user (change via cmd 'script whoami=\"USER\"')";
     commands += "`weather: display local weather information.";
+    commands += "`open: open a new page, can open 'LDOS' so far.";
     slowText(commands);
   } else if (string === "ls") return ls();
   else if (ss[0] === "cat") return cat(ss[1]);
@@ -209,6 +210,7 @@ function interpretText(string) {
     mv(ss[1], ss[2]);
   } else if (ss[0] === "lbl") lbl(ss[1]);
   else if (ss[0] === "vim") vim(ss[1]);
+  else if (ss[0] === "open") openpage(ss[1]);
   else slowText("unknown command");
   return "";
 }
@@ -711,3 +713,7 @@ function logFunctions() {
 }
 const functions = logFunctions();
 writeFunctions();
+
+function openpage(file) {
+  location.href = "./routes/pages/" + file + ".html";
+}

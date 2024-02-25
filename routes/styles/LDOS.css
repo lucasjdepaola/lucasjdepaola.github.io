@@ -1,0 +1,202 @@
+/* yes */
+body {
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  min-height: 100vh;
+  margin:0;
+  background-image: url('../pages/images/rainbow.png');
+}
+
+button {
+  background: transparent;
+  border:none;
+}
+
+#profilebutton {
+  background-color:rgba(25,26,37,.70);
+  width:27px;
+  text-align:center;
+  height:20px;
+  border-radius:20px;
+  border: 2px solid hotpink;
+  margin-left:5px;
+}
+
+#workspacenumber {
+  border:2px solid hotpink;
+  display:inline-block;
+  background-color:rgba(40,32,56,.70);
+  text-align:center;
+  width:70px;
+  border-radius:20px;
+}
+
+#workspace2, #workspace3 {
+  color:rgba(255,255,255,.3);
+}
+
+#message {
+  border:2px solid hotpink;
+  display:inline-block;
+  font-size: 15px;
+  background-color:rgba(40,32,56,.70);
+  text-align:center;
+  width:325px;
+  border-radius:20px;
+}
+
+#LDbar {
+  position:fixed;
+  color:white;
+  font-family: "iosevka";
+  top:0;
+  left:0;
+  width:99%;
+  height:25px;
+  border-radius:6px;
+  margin:3px;
+  background-color:rgba(32,32,35,0);
+  z-index:1;
+}
+
+#terminal {
+  position:relative;
+  display:none;
+  background-color:rgba(25,26,37,0.7) !important;
+  border-radius:6px;
+  border: 1px solid white;
+  color:white;
+  z-index:2;
+}
+
+#ps1, #terminaltext {
+  display:inline-block;
+}
+
+.bracket1, .bracket2 {
+  color: red;
+}
+
+.user {
+  color: gold;
+}
+
+.at {
+  color: lime;
+}
+
+.LDTerminal {
+  color: #86ccda;
+}
+
+.filepth {
+  color:pink;
+}
+
+#terminaltext {
+  font-family: "iosevka"; 
+  color:white;
+  font-size: 15px;
+  width: 50%;
+  background-color:rgba(25,26,37,0);
+  border:none;
+  outline:none;
+}
+
+#terminaloutput {
+  font-size: 15px;
+  font-family: "iosevka";
+  color:white;
+  white-space:pre;
+  margin-left:2px;
+}
+
+#ps1 {
+  font-family:"iosevka";
+}
+
+.fa-user {
+  color:white;
+}
+
+@keyframes slideDown {
+  0% {
+    transform: translateY(-100%) translate(-50%,-50%);
+  }
+  100% {
+    transform: translateY(0) translate(-50%, -50%);
+  }
+}
+
+#searchbar {
+  display:none;
+  position:absolute;
+  animation: 1s ease-out 0s 1 slideDown;
+  animation-fill-mode: forwards;
+  animation-play-state:paused;
+  background-color:rgba(25,26,37,0.7);
+  flex-direction: column;
+  left:50%;
+  top:50%;
+  transform: translate(-50%, -50%);
+  padding:10px;
+  height:500px;
+  width:500px;
+  border:2px solid white;
+  border-radius:10px;
+  z-index:4;
+}
+
+#chrome {
+  display:none;
+}
+
+#linkbar {
+}
+
+#newsite {
+  width:60%;
+  border-radius:10px;
+  border:none;
+  outline:none;
+  background-color: rgba(61, 64, 76, .8);
+  color:white;
+  font-family: "iosevka";
+  margin-left:10%;
+  text-indent:3%;
+}
+
+#exitChrome {
+  right:1%;
+}
+
+#tabs {
+  border-bottom:1px solid white;
+  height:3%;
+  width:100%;
+}
+
+.fa-magnifying-glass {
+  position:absolute;
+  top:13px;
+  left:3px;
+  color:white;
+}
+
+#inputBar {
+  font-family: "iosevka"; 
+  color:white;
+  margin-left:13px;
+  background-color:rgba(25,26,37,0);
+  border-radius: 5px;
+}
+
+@font-face {
+  font-family: "iosevka";
+  src: url('../pages/fonts/iosevka.ttf');
+}
+@font-face {
+  font-family: "ttyclock";
+  src: url('../pages/fonts/ttyclock.ttf');
+}

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LDOS</title>
+  <link rel="stylesheet" href="../styles/LDOS.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw=="
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+
+<body>
+  <div id="LDos">
+    <div id="searchbar">
+      <i class="fa-solid fa-magnifying-glass"></i><input type="text" id="inputBar" placeholder="Search">
+    </div>
+    <div id="LDbar">
+      <button id="profilebutton"><i class="fa-solid fa-user"></i></button>
+      <div id="workspacenumber"><span id="workspace1">1</span> <span id="workspace2">2</span> <span
+          id="workspace3">3</span></div>
+      <div id="message">LDOS | 'ctrl + space' to search</div>
+      <div id="dateAndTime"></div>
+    </div>
+    <div id="programs">
+      <div id="terminal">
+        <div id="terminaloutput"></div>
+        <div id="ps1"><span class="bracket1">[</span><span class="user">user</span><span class="at">@</span><span
+            class="LDTerminal">LDOS</span><span class="filepth"> ~</span><span class="userpath"></span><span
+            class="bracket2">]</span></div>
+        <input type="text" id="terminaltext" placeholder="">
+      </div>
+      <div id="chrome">
+        <div id="tabs">
+          <button id="exitChrome"></button>
+        </div>
+        <div id="linkbar">
+          <input type="text" id="newsite" placeholder="google.com">
+        </div>
+        <iframe src="https://www.google.com/webhp?igu=1"></iframe>
+      </div>
+    </div>
+
+  </div>
+  <script src="../scripts/LDOS.js"></script>
+</body>
+
+</html>
