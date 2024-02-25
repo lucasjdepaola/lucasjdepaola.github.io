@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>offline typing test</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+
+<body>
+  <div id="typetest">
+    <span id="wpm"></span>
+    <div id="text"></div>
+    <div id="cursor"></div>
+    <!-- <button onclick="restartTest();" id="restart">restart test</button> -->
+  </div>
+
+  <style>
+    :root {
+      font-family: Courier New;
+      color: white;
+      font-size: 20px;
+      background-color: grey;
+    }
+
+    #typetest {
+      width: 70%;
+      height: 30%;
+      background-color: grey;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    #cursor {
+      position: absolute;
+    }
+  </style>
+  <script src="../scripts/typetest.js"></script>
+</body>
+
+</html>

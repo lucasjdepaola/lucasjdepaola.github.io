@@ -189,7 +189,8 @@ function interpretText(string) {
     commands +=
       "`whoami: display user (change via cmd 'script whoami=\"USER\"')";
     commands += "`weather: display local weather information.";
-    commands += "`open: open a new page, can open 'LDOS' so far.";
+    commands +=
+      "`open: open a new page, can open 'LDOS' and 'typetest' so far.";
     slowText(commands);
   } else if (string === "ls") return ls();
   else if (ss[0] === "cat") return cat(ss[1]);
