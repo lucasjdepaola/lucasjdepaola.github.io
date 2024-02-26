@@ -192,6 +192,7 @@ function interpretText(string) {
     commands += "`weather: display local weather information.";
     commands +=
       "`open: open a new page, can open 'LDOS' and 'typetest' so far.";
+    commands += "`calc: input calculator functions such as 2+2";
     slowText(commands);
   } else if (string === "ls") return ls();
   else if (ss[0] === "cat") return cat(ss[1]);
@@ -205,8 +206,8 @@ function interpretText(string) {
   else if (string === "ip") ip();
   else if (string === "b") cd("..");
   else if (string === "whoami") slowText(whoami);
-  else if (ss[0] === "script") {
-    interpretScript(string.slice(6, string.length));
+  else if (ss[0] === "script" || ss[0] === "calc") {
+    interpretScript(sensitiveCase[1]);
   } else if (string === "weather") weather();
   else if (ss[0] === "mv") {
     mv(ss[1], ss[2]);
@@ -238,7 +239,7 @@ function interpretScript(script) {
   try {
     const result = eval(script);
     // slowText(result);
-    console.log(result);
+    console.log("\n" + result);
   } catch (error) {
     console.log("error " + error.message);
   }
