@@ -207,7 +207,8 @@ function interpretText(string) {
   else if (string === "b") cd("..");
   else if (string === "whoami") slowText(whoami);
   else if (ss[0] === "script" || ss[0] === "calc") {
-    interpretScript(sensitiveCase[1]);
+    const calc = string.replaceAll("script ", "").replaceAll("calc ", "");
+    interpretScript(calc);
   } else if (string === "weather") weather();
   else if (ss[0] === "mv") {
     mv(ss[1], ss[2]);
