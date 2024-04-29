@@ -16,7 +16,6 @@ body {
   align-items: center;
   font-family:"nfm";
   color:white;
-  cursor:url("./images/mouse.png") 2 2, auto;
 }
 
 #bgimage {
