@@ -89,18 +89,6 @@ function initFileSystem() {
         "There isn't much that I can write about myself`If you're looking for what I've made project wise, it should be on my github.",
       ),
     ], null),
-    new Directory("philosophy", [
-      new File(
-        "crow.txt",
-        "txt",
-        "putting something here.",
-      ),
-      new File(
-        "liveby.txt",
-        "txt",
-        "tba",
-      ),
-    ]),
   ];
   return rootDir;
 }
